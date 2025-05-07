@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
+import { Router } from "express";
+import { getHealth } from "../controllers/health.controller";
 
-export const getHealth = (_req: Request, res: Response) => {
-  res.json({ status: "ok", timestamp: Date.now() });
-};
+export const healthRouter = Router();
+healthRouter.get("/", getHealth);
