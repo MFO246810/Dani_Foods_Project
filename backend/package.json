@@ -1,16 +1,14 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",          // points at the file we’ll generate
+  "type": "module",                 // optional: lets you use ES-modules import syntax
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "clean": "rimraf dist",         // wipe old build output            
+    "dev":   "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "npm run clean && tsc",// compile *.ts  →  dist/*.js  
+    "start": "node dist/index.js"   // run the compiled code in prod
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
     "dotenv": "^16.5.0",
     "express": "^5.1.0"
@@ -19,6 +17,8 @@
     "@types/express": "^5.0.1",
     "@types/node": "^22.15.15",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.8.3"
-  }
+    "typescript": "^5.8.3",
+    "rimraf": "^5.0.0"              // tiny cross-platform “rm -rf”
+  },
+  "license": "ISC"
 }
