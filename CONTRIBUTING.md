@@ -85,7 +85,7 @@ A commit has **two parts**:
 
 > 💡  Tip: commit early and often so each commit stays focused.
 
-#### Conventional Commits (Optional but Helpful)
+#### Conventional Commits 
 
 Prefix titles with `feat:`, `fix:`, `docs:` etc. if you want automatic changelogs later.
 
