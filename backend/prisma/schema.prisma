@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Discounted {
+  id            Int          @id @default(autoincrement()) @db.UnsignedInt
+  Order_item_id Int?         @db.UnsignedInt
+  Promo_Id      Int?         @db.UnsignedInt
+  Amount        Int
+  OrderItems    OrderItems?  @relation(fields: [Order_item_id], references: [Order_Items_Id], onDelete: NoAction, onUpdate: NoAction, map: "discounted_Order_Item_id_foreign")
+  Promo_items   Promo_items? @relation(fields: [Promo_Id], references: [Promo_id], onDelete: NoAction, onUpdate: NoAction, map: "discounted_promo_id_foreign")
+
+  @@index([Order_item_id], map: "discounted_Order_Item_id_foreign")
+  @@index([Promo_Id], map: "discounted_promo_id_foreign")
+}
+
+model Employee_s {
+  Employee_Id Int    @id @default(autoincrement()) @db.UnsignedInt
+  role        String @db.VarChar(255)
+  User_Id     Int?   @db.UnsignedInt
+  Users       Users? @relation(fields: [User_Id], references: [User_ID], onDelete: NoAction, onUpdate: NoAction, map: "employee's_user_id_foreign")
+
+  @@index([User_Id], map: "employee's_user_id_foreign")
+  @@map("Employee's")
+}
+
+model OrderItems {
+  Order_Items_Id Int          @id @default(autoincrement()) @db.UnsignedInt
+  Order_Id       Int
+  Product_Id     Int?         @db.UnsignedInt
+  Discounted     Discounted[]
+  Orders         Orders       @relation(fields: [Order_Items_Id], references: [Order_Id], onDelete: NoAction, onUpdate: NoAction, map: "orderitems_order_items_id_foreign")
+  Product        Product?     @relation(fields: [Product_Id], references: [Product_Id], onDelete: NoAction, onUpdate: NoAction, map: "orderitems_product_id_foreign")
+
+  @@index([Product_Id], map: "orderitems_product_id_foreign")
+}
+
+model Orders {
+  Order_Id       Int              @id @default(autoincrement()) @db.UnsignedInt
+  Order_Date     DateTime         @db.DateTime(0)
+  Order_Time     DateTime         @db.Timestamp(0)
+  User_ID        Int?             @db.UnsignedInt
+  Total          Decimal          @db.Decimal(8, 2)
+  OrderItems     OrderItems?
+  Users          Users?           @relation(fields: [User_ID], references: [User_ID], onDelete: NoAction, onUpdate: NoAction, map: "orders_user_id_foreign")
+  Shipping_Table Shipping_Table[]
+
+  @@index([User_ID], map: "orders_user_id_foreign")
+}
+
+model Product {
+  Product_Id          Int           @id @db.UnsignedInt
+  Product_Name        String        @db.VarChar(255)
+  Product_Description String        @db.Text
+  Product_Price       Decimal       @db.Decimal(8, 2)
+  Product_Quatity     Int
+  Product_img_uri     String?       @db.VarChar(255)
+  OrderItems          OrderItems[]
+  Promo_items         Promo_items[]
+}
+
+model Promo {
+  Id               Int          @id @default(autoincrement()) @db.UnsignedInt
+  promo_name       String       @db.Text
+  Discount_Percent Decimal      @db.Decimal(8, 2)
+  Start_Date       DateTime     @db.Date
+  End_Date         DateTime     @db.Date
+  Promo_items      Promo_items?
+}
+
+model Promo_items {
+  Promo_id   Int          @id @db.UnsignedInt
+  Product_id Int?         @db.UnsignedInt
+  Discounted Discounted[]
+  Product    Product?     @relation(fields: [Product_id], references: [Product_Id], onDelete: NoAction, onUpdate: NoAction, map: "promo_items_product_id_foreign")
+  Promo      Promo        @relation(fields: [Promo_id], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "promo_items_promo_id_foreign")
+
+  @@index([Product_id], map: "promo_items_product_id_foreign")
+}
+
+model Shipping_Table {
+  Shipping_ID Int     @id @default(autoincrement()) @db.UnsignedInt
+  Order_id    Int?    @db.UnsignedInt
+  Tracking_no String  @db.Text
+  Orders      Orders? @relation(fields: [Order_id], references: [Order_Id], onDelete: NoAction, onUpdate: NoAction, map: "shipping_table_order_id_foreign")
+
+  @@index([Order_id], map: "shipping_table_order_id_foreign")
+}
+
+model User_Notifications {
+  Notif_id Int    @id @default(autoincrement()) @db.UnsignedInt
+  User_ID  Int?   @db.UnsignedInt
+  Message  String @db.Text
+  Users    Users? @relation(fields: [User_ID], references: [User_ID], onDelete: NoAction, onUpdate: NoAction, map: "user_notifications_user_id_foreign")
+
+  @@index([User_ID], map: "user_notifications_user_id_foreign")
+}
+
+model Users {
+  User_ID            Int                  @id @default(autoincrement()) @db.UnsignedInt
+  User_img_uri       String?              @db.VarChar(255)
+  Username           String               @db.VarChar(255)
+  FirstName          String               @db.VarChar(255)
+  LastName           String               @db.VarChar(255)
+  Address            String?              @db.Text
+  City               String?              @db.VarChar(255)
+  State              String?              @db.VarChar(255)
+  ZipCode            Int?
+  Password           String               @db.VarChar(255)
+  Employee_s         Employee_s[]
+  Orders             Orders[]
+  User_Notifications User_Notifications[]
+}
